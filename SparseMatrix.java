@@ -1,15 +1,16 @@
-import java.util.LinkedList;
 import java.util.Iterator;
-import java.lang.*;
+import java.util.LinkedList;
 
 
 class SparseMatrix implements SparseInterface
 {
+
     //Variable Declaration for the list that will contain
     //the matrix and the variable that will hold the maxsize.
     private int maxSize;
     //Declares the LinkedList which holds MatrixElement nodes.
     private LinkedList<MatrixElement> matrix;
+
 
     //Basic constructor which creates a new matrix of size 5.
     public SparseMatrix(){
@@ -26,6 +27,7 @@ class SparseMatrix implements SparseInterface
 
     }
 
+
     //Clear function. It "erases" the matrix by starting a new list
     //and assigning it to the matrix variable
     public void clear(){
@@ -33,16 +35,16 @@ class SparseMatrix implements SparseInterface
         return;
     }
 
+
     //Function for adjusting the size of the matrix. Taking in
     //the new size as an integer.
     public void setSize(int size){
         //Checks if the size is negative. If it is, there is an error
         //prompt printed out, and nothing is changed.
-
-
         if (size < 0)
         {
-            throw new IndexOutOfBoundsException("Error, can't have a negative size!");
+            System.out.println("Error! Size cannot be negative. Nothing has been changed, try again.");
+            return;
         }
 
         this.maxSize=size;
@@ -80,10 +82,12 @@ class SparseMatrix implements SparseInterface
             return;
         }
         //Invokes the built in remove function.
-        matrix.remove(new MatrixElement(row, col, 0));
+        matrix.remove(new MatrixElement(row, col, 1));
 
 
     }
+
+
     //Function to retrieve an element from the list. It takes in the row and column and returns the
     //value at that object in the list.
     public int getElement(int row, int col){
@@ -102,26 +106,30 @@ class SparseMatrix implements SparseInterface
         return value;
 
     }
+
+
     //Function for finding the determinant.
     public int determinant(){
         //Base Cases, if maxSize==1, then the determinant is the single value.
-        if (maxSize ==1)
+        if (maxSize ==1) {
             return matrix.get(0).getValue();
-        //Base Cases, if maxSize==2, then the determinant is simple to calculate. If the element doesn't exist,
+        }
+        //Base Case(2), if maxSize==2, then the determinant is simple to calculate. If the element doesn't exist,
         //the getElement function will return 0 for that element (sparse matrix).
         if (maxSize ==2){
             return getElement(0,0)*getElement(1,1)-getElement(0,1)*getElement(1,0);
         }
         //Recursive case.
-        int determinant = 0;
+        int answer = 0;
 
         //Shrinks the matrix into recursive steps using minor function which shrinks it by one row / column at a time
         //until the base case is hit.
         for (int j=0; j<maxSize;j++){
-            determinant += Math.pow(-1,j)*getElement(0,j)*minor(0,j).determinant();
+            answer += Math.pow(-1,j)*getElement(0,j)*minor(0,j).determinant();
         }
-        return determinant;
+        return answer;
     }
+
 
     //Method for finding the minor of the matrix.
     public SparseInterface minor(int row, int col) {
@@ -130,7 +138,8 @@ class SparseMatrix implements SparseInterface
         try {
             if (col >= this.maxSize || row >= this.maxSize || row < 0 || col < 0)
                 throw new IndexOutOfBoundsException("Error. Invalid row / column combination.");
-        } catch (IndexOutOfBoundsException e) {
+            }
+        catch (IndexOutOfBoundsException e) {
             System.out.println(e.toString());
         }
         //New size of one less than the previous.
@@ -143,23 +152,27 @@ class SparseMatrix implements SparseInterface
         //While iterator has next, copy data from original list to new list, sans the row / column we are
         //getting rid rid of.
         while (matrixIterator.hasNext()) {
-            MatrixElement elem = (MatrixElement) matrixIterator.next();
-            if (elem.getRow() != row && elem.getColumn() != col) {
+            MatrixElement value = (MatrixElement) matrixIterator.next();
+            if (value.getRow() != row && value.getColumn() != col) {
 
-                if (elem.getRow() > row && elem.getColumn() > col) {
-                    tempList.add(new MatrixElement(elem.getRow() - 1, elem.getColumn() - 1, elem.getValue()));
-                } else if (elem.getRow() > row) {
-                    tempList.add(new MatrixElement(elem.getRow() - 1, elem.getColumn(), elem.getValue()));
-                } else if (elem.getColumn() > col) {
-                    tempList.add(new MatrixElement(elem.getRow(), elem.getColumn() - 1, elem.getValue()));
-                } else {
-                    tempList.add(elem);
+                if (value.getRow() > row && value.getColumn() > col) {
+                    tempList.add(new MatrixElement(value.getRow() - 1, value.getColumn() - 1, value.getValue()));
+                }
+                else if (value.getRow() > row) {
+                    tempList.add(new MatrixElement(value.getRow() - 1, value.getColumn(), value.getValue()));
+                }
+                else if (value.getColumn() > col) {
+                    tempList.add(new MatrixElement(value.getRow(), value.getColumn() - 1, value.getValue()));
+                }
+                else {
+                    tempList.add(value);
                 }
             }
         }
         //returns new SparseMatrix of new size and list.
         return new SparseMatrix(sizeNew, tempList);
     }
+
 
     //Function for printing the matrix to a string.
     public String toString(){
@@ -223,9 +236,11 @@ class SparseMatrix implements SparseInterface
 
 
     }
+
+
     //Get size returns the current maxSize of the matrix.
     public int getSize(){
-        return this.maxSize;
+        return (this.maxSize);
 
     }
 }
